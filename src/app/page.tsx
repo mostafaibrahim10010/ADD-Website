@@ -6,7 +6,7 @@ import { ServicesSection } from "@/components/home/ServicesSection";
 import { ExpertiseSection } from "@/components/home/ExpertiseSection";
 import { PartnersSection } from "@/components/home/PartnersSection";
 import { BlogSection } from "@/components/home/BlogSection";
-import { site, siteUrl } from "@/data/site";
+import { mapsUrl, site, siteUrl } from "@/data/site";
 
 // Structured data so search engines can show the studio's details.
 const organizationLd = {
@@ -27,6 +27,8 @@ const organizationLd = {
     addressLocality: "Alexandria",
     addressCountry: "EG",
   },
+  hasMap: mapsUrl,
+  sameAs: site.social.map((s) => s.href),
 };
 
 export default function HomePage() {

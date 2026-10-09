@@ -11,12 +11,11 @@ export const site = {
     { label: "EG", value: "03-586-5567", href: "tel:035865567" },
     { label: "KSA", value: "+966508722707", href: "tel:+966508722707" },
   ],
-  // Profile URLs were not part of the design file — fill these in when available.
   social: [
-    { name: "X", icon: "/icons/x.svg", href: "#" },
-    { name: "Instagram", icon: "/icons/instagram.svg", href: "#" },
-    { name: "Facebook", icon: "/icons/facebook.svg", href: "#" },
-    { name: "LinkedIn", icon: "/icons/linkedin.svg", href: "#" },
+    { name: "X", icon: "/icons/x.svg", href: "https://x.com/architectsadd" },
+    { name: "Instagram", icon: "/icons/instagram.svg", href: "https://www.instagram.com/addarchitects.eg" },
+    { name: "Facebook", icon: "/icons/facebook.svg", href: "https://www.facebook.com/addarchitects.eg" },
+    { name: "LinkedIn", icon: "/icons/linkedin.svg", href: "https://www.linkedin.com/company/add-architects" },
   ],
 } as const;
 
@@ -37,5 +36,4 @@ export const footerFirmLinks = [
   { label: "Our Articles & Blogs", href: "/#blog" },
 ] as const;
 
-export const mapsUrl =
-  "https://www.google.com/maps/search/?api=1&query=17+Mostafa+Fahmy+Gleem+Alexandria+Egypt";
+export const mapsUrl = "https://maps.app.goo.gl/AuEkrwVuC2io9VBp6";

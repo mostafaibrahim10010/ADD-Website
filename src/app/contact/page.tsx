@@ -23,7 +23,7 @@ const detailLink = "transition-colors duration-300 hover:text-brand";
 const label = "text-xs tracking-[0.18em] text-muted uppercase";
 const section = "container-content scroll-mt-28 pt-[clamp(5rem,9vw,8rem)]";
 const mapEmbed =
-  "https://www.google.com/maps?q=17+Mostafa+Fahmy+Gleem+Alexandria+Egypt&z=15&output=embed";
+  "https://www.google.com/maps?q=ADD+Architects,+Al+Aqesa+WA+Baqos,+El+Raml+1,+Alexandria&z=16&output=embed";
 
 export default function ContactPage() {
   return (

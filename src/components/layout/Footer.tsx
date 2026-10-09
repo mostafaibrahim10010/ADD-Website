@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { footerFirmLinks, site } from "@/data/site";
+import { footerFirmLinks, mapsUrl, site } from "@/data/site";
 import { services } from "@/data/content";
 import { CtaBanner } from "./CtaBanner";
 import { LogoFull } from "./Logo";
@@ -20,6 +20,8 @@ export function SocialLinks({ size = 30 }: { size?: number }) {
         <li key={s.name}>
           <a
             href={s.href}
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label={s.name}
             className="block rounded-full transition-[transform,filter] duration-300 hover:-translate-y-0.5 hover:[filter:invert(17%)_sepia(80%)_saturate(3500%)_hue-rotate(347deg)_brightness(85%)]"
           >
@@ -46,14 +48,19 @@ export function Footer() {
             <div className="flex flex-col gap-[27px]">
               <ColumnTitle>Get in Touch</ColumnTitle>
               <address className="flex flex-col gap-[27px] not-italic">
-                <p className="flex items-center gap-2.5 text-[15px] leading-[1.36] text-muted">
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 text-[15px] leading-[1.36] text-muted transition-colors hover:text-brand"
+                >
                   <Image src="/icons/location.svg" alt="" width={24} height={24} />
                   <span>
                     {site.address[0]}
                     <br />
                     {site.address[1]}
                   </span>
-                </p>
+                </a>
                 <a
                   href={`mailto:${site.email}`}
                   className="flex items-end gap-2.5 text-[15px] leading-[1.5] text-muted transition-colors hover:text-brand"
