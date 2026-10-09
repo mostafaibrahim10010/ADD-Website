@@ -1,26 +1,109 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design tokens — sourced from the Figma "MAIN PAGES" file.
+ * Brand red, neutrals and type families are referenced everywhere via
+ * Tailwind utilities (bg-brand, text-muted, font-display, …).
+ */
+@theme {
+  --color-brand: #a81f23;
+  --color-brand-dark: #8c191c;
+  --color-ink: #000000;
+  --color-ink-soft: #030303;
+  --color-muted: #77808b;
+  --color-meta: #797979;
+  --color-role: #6b7280;
+  --color-surface: #f2f2f2;
+  --color-line: #000000;
+
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-alt: var(--font-questrial), var(--font-montserrat), ui-sans-serif, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  --container-content: 1086px;
+  --container-wide: 1410px;
+  --container-footer: 1347px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background: #ffffff;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background: var(--color-brand);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility container-content {
+  width: 100%;
+  max-width: calc(var(--container-content) + 2.5rem);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@utility container-wide {
+  width: 100%;
+  max-width: calc(var(--container-wide) + 2.5rem);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@utility container-footer {
+  width: 100%;
+  max-width: calc(var(--container-footer) + 2.5rem);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+/* Fluid display sizes (Figma sizes are the 1920px maximums) */
+@utility text-display {
+  font-size: clamp(2rem, 1.2rem + 2.6vw, 3.5625rem); /* 57px */
+  line-height: 1.37;
+}
+@utility text-display-sm {
+  font-size: clamp(1.875rem, 1.2rem + 2.2vw, 3.4375rem); /* 55px */
+  line-height: 1.42;
+}
+@utility text-intro {
+  font-size: clamp(2rem, 1.4rem + 1.8vw, 3.125rem); /* 50px */
+  line-height: 1.38;
 }
