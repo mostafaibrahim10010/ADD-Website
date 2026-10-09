@@ -1,16 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import {
-  cubicBezier,
-  motion,
-  useMotionTemplate,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-  useVelocity,
-} from "motion/react";
+import { cubicBezier } from "motion/react";
 import { useLenis } from "lenis/react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Project, ProjectCategory } from "@/data/types";
@@ -34,30 +25,6 @@ const STICKY_TOP = 96;
 /** Space between the sticky bar and the top of an opened project. */
 const OPEN_GAP = 32;
 
-/**
- * Feed scale while scrolling: the faster you scroll, the further the list
- * zooms out (down to ~74%), springing back when you stop — big.dk's signature.
- * `locked` pins it at 100% while the page scrolls itself to an opened project.
- */
-function useVelocityZoom(ref: React.RefObject<HTMLDivElement | null>, locked: React.RefObject<boolean>) {
-  const reduce = useReducedMotion();
-  const { scrollY } = useScroll();
-  const velocity = useVelocity(scrollY);
-  const target = useTransform(velocity, (v) =>
-    reduce || locked.current ? 1 : 1 - Math.min(Math.abs(v) / 4200, 0.26),
-  );
-  const scale = useSpring(target, { stiffness: 160, damping: 28, mass: 0.6 });
-  // Zoom around the middle of the viewport, wherever that falls inside the feed.
-  const originY = useTransform(scrollY, (y) => {
-    const el = ref.current;
-    if (!el) return 0;
-    const top = el.getBoundingClientRect().top + y;
-    return y + window.innerHeight / 2 - top;
-  });
-  const transformOrigin = useMotionTemplate`50% ${originY}px`;
-  return { scale, transformOrigin };
-}
-
 export function ProjectsExplorer({
   projects,
   basePath,
@@ -68,9 +35,7 @@ export function ProjectsExplorer({
   const pathname = usePathname();
   const lenis = useLenis();
   const feedRef = useRef<HTMLDivElement>(null);
-  const zoomLocked = useRef(false);
   const [query, setQuery] = useState("");
-  const { scale, transformOrigin } = useVelocityZoom(feedRef, zoomLocked);
 
   // The open project is whatever /projects/<slug> the URL points at…
   const pathSlug = useMemo(() => {
@@ -110,8 +75,6 @@ export function ProjectsExplorer({
       const el = feedRef.current?.querySelector<HTMLElement>(`#${CSS.escape(slug)}`);
       if (!el) return;
       cancelAnimationFrame(frame.current);
-      zoomLocked.current = true;
-      scale.jump(1);
 
       // Where the bar sits once stuck (it may not be stuck yet when the page is at the top).
       const targetTop = STICKY_TOP + (barRef.current?.offsetHeight ?? 50) + OPEN_GAP;
@@ -125,11 +88,10 @@ export function ProjectsExplorer({
         if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
         else window.scrollTo(0, y);
         if (t < 1) frame.current = requestAnimationFrame(step);
-        else zoomLocked.current = false;
       };
       frame.current = requestAnimationFrame(step);
     },
-    [lenis, scale],
+    [lenis],
   );
 
   // Start the glide in the same frame the resize transition starts.
@@ -179,10 +141,9 @@ export function ProjectsExplorer({
         keywords={keywords}
       />
 
-      <motion.div
+      <div
         ref={feedRef}
-        className="flex flex-col gap-[clamp(3rem,4.17vw,5rem)] pt-[clamp(2.25rem,4.48vw,5.375rem)] will-change-transform"
-        style={{ scale, transformOrigin }}
+        className="flex flex-col gap-[clamp(3rem,4.17vw,5rem)] pt-[clamp(2.25rem,4.48vw,5.375rem)]"
       >
         {visible.map((project, i) => (
           <FeedItem
@@ -206,7 +167,7 @@ export function ProjectsExplorer({
             </button>
           </div>
         )}
-      </motion.div>
+      </div>
 
       <div className="flex justify-center pt-[clamp(3rem,6vw,5rem)] pb-[clamp(3rem,6vw,5rem)]">
         <button

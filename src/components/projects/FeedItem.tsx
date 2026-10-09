@@ -153,10 +153,10 @@ export function FeedItem({ project, open, priority, onToggle }: FeedItemProps) {
     <article id={project.slug} aria-labelledby={`${project.slug}-title`} className="@container" style={ROW_VARS}>
       <motion.div
         ref={rowRef}
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.1 }}
-        transition={{ duration: 1, ease: EASE_OUT_EXPO }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
         className="relative"
       >
         <div

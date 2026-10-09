@@ -69,12 +69,14 @@ export default function PartnersPage() {
 
       <section aria-label="Awards and recognition" className={`${section} pb-[clamp(4rem,7vw,7.5rem)]`}>
         <SectionHeading>Awards &amp; Recognition</SectionHeading>
-        <div className="mt-[clamp(1.5rem,3vw,2.5rem)] grid gap-[clamp(2rem,4vw,4rem)] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <div className="mt-[clamp(1.5rem,3vw,2.5rem)] grid gap-[clamp(2rem,4vw,4rem)] md:grid-cols-2">
+          {/* Stretches to the height of the awards list; the crop is anchored on the two people. */}
           <ParallaxImage
             src="/images/about/about-04.webp"
-            alt="Receiving the AIA Middle East award in Jordan, 2025"
-            className="aspect-[4/5] w-full"
-            objectPosition="50% 30%"
+            alt="ADD Architects receiving the AIA Middle East Honor Award in Jordan, 2025"
+            className="aspect-[1601/951] w-full md:aspect-auto md:h-full md:min-h-[420px]"
+            objectPosition="24% 35%"
+            strength={3}
           />
           <div className="flex flex-col">
             <Stagger className="flex flex-col" stagger={0.1}>
