@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useLenis } from "lenis/react";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { MouseEvent } from "react";
 import { mainNav, site } from "@/data/site";
 import { cn } from "@/lib/cn";
 import { PillLink } from "@/components/ui/PillButton";
@@ -37,9 +38,34 @@ export function Header() {
     else lenis?.start();
   }, [open, lenis]);
 
+  // Header links always land at the top of the destination page. Next keeps
+  // the scroll offset when the new page's top is still in view, and Lenis holds
+  // on to it, so reset explicitly once the new route has rendered.
+  const pendingTop = useRef<string | null>(null);
+  const onLinkClick = (e: MouseEvent) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = (e.target as HTMLElement).closest("a");
+    if (!a || a.origin !== window.location.origin || a.hash) return;
+    if (a.pathname === pathname) {
+      if (lenis) lenis.scrollTo(0, { duration: 1.2, force: true });
+      else window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      pendingTop.current = a.pathname;
+    }
+  };
+
+  useLayoutEffect(() => {
+    const target = pendingTop.current;
+    if (target === null || target !== pathname) return;
+    pendingTop.current = null;
+    if (lenis) lenis.scrollTo(0, { immediate: true, force: true });
+    else window.scrollTo(0, 0);
+  }, [pathname, lenis]);
+
   return (
     <>
       <motion.header
+        onClickCapture={onLinkClick}
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, ease: EASE_OUT_EXPO, delay: 0.2 }}
@@ -121,6 +147,7 @@ export function Header() {
         {open && (
           <motion.div
             id="mobile-menu"
+            onClickCapture={onLinkClick}
             className="fixed inset-0 z-40 flex flex-col bg-white px-5 pt-28 pb-10 lg:hidden"
             initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
             animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
