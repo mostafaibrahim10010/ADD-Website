@@ -12,7 +12,7 @@ export function ShareLinks({ slug, title }: ShareLinksProps) {
   const projectUrl = () => `${window.location.origin}/projects/${slug}`;
 
   const openShare = (build: (url: string, text: string) => string) => {
-    const text = `${title} — ADD Architects`;
+    const text = `${title} | ADD Architects`;
     window.open(build(encodeURIComponent(projectUrl()), encodeURIComponent(text)), "_blank", "noopener,noreferrer,width=640,height=560");
   };
 

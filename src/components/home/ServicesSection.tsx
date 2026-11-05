@@ -29,21 +29,33 @@ function ToggleIcon({ open }: { open: boolean }) {
 export function ServicesSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const baseId = useId();
+  const active = services[openIndex ?? 0];
 
   return (
     <section id="services" className="container-content scroll-mt-28 pt-[clamp(5rem,8vw,6.5rem)]">
       <SectionHeading>Services &amp; Projects</SectionHeading>
 
       <div className="mt-[26px] grid gap-10 md:grid-cols-[minmax(0,526fr)_minmax(0,517fr)] md:gap-x-[43px]">
-        {/* Fixed section image — the exact Figma crop (node 69:361), balloon and sky included. */}
-        <Reveal className="relative aspect-[526/746] overflow-hidden bg-white">
-          <Image
-            src="/images/home/services-section.webp"
-            alt="Aerial rendering of an ADD masterplan with a central tower and landscaped boulevard"
-            fill
-            sizes="(min-width: 768px) 526px, 100vw"
-            className="object-cover"
-          />
+        {/* Shows the open service's image (the first service while all are closed), cross-fading between them. */}
+        <Reveal className="relative aspect-[526/805] overflow-hidden bg-white">
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={active.slug}
+              className="absolute inset-0"
+              initial={{ opacity: 0, scale: 1.04 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.9, ease: EASE_OUT_EXPO }}
+            >
+              <Image
+                src={active.image}
+                alt={active.title}
+                fill
+                sizes="(min-width: 768px) 526px, 100vw"
+                className="object-cover"
+              />
+            </motion.div>
+          </AnimatePresence>
         </Reveal>
 
         <div>

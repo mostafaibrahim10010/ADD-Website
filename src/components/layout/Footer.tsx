@@ -46,7 +46,7 @@ export function Footer() {
             </div>
 
             <div className="flex flex-col gap-[27px]">
-              <ColumnTitle>Get in Touch</ColumnTitle>
+              <ColumnTitle>Contact Us</ColumnTitle>
               <address className="flex flex-col gap-[27px] not-italic">
                 <a
                   href={mapsUrl}

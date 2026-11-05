@@ -8,7 +8,7 @@ import { PartnersSection } from "@/components/home/PartnersSection";
 import { BlogSection } from "@/components/home/BlogSection";
 import { mapsUrl, site, siteUrl } from "@/data/site";
 
-// Structured data so search engines can show the studio's details.
+// Structured data so search engines can show the firm's details.
 const organizationLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",

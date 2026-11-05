@@ -1,12 +1,12 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "ADD — Architecture Design + Development";
+export const alt = "ADD: Architecture Design + Development";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 const RED = "#A81F23";
 
-/** Social share card: the red ADD mark with the studio tagline. */
+/** Social share card: the red ADD mark with the firm tagline. */
 export default function OpengraphImage() {
   return new ImageResponse(
     (

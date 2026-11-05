@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { process, sectors } from "@/data/content";
-import { pickProjects } from "@/data/projects";
+import { process, scopeOfWork } from "@/data/content";
+import { CATEGORIES, filterProjects } from "@/data/projectRoutes";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PillLink } from "@/components/ui/PillButton";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -20,7 +20,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/services" },
 };
 
-const featured = pickProjects("the-dakeer-island", "siwa-residential-compound", "keheilan-headquarters");
+// The first project of each classification, as listed on the Projects page.
+const featured = CATEGORIES.map((c) => filterProjects(c.slug)[0]);
 
 const section = "container-content scroll-mt-28 pt-[clamp(5rem,9vw,8rem)]";
 
@@ -30,7 +31,7 @@ export default function ServicesPage() {
       <PageHeader
         crumb="Services"
         title="Innovative Architectural Solutions Tailored To Every Project."
-        lead="From the first sketch to the final handover, ADD brings design, engineering and delivery under one roof — six disciplines working as a single, coordinated practice."
+        lead="From the first sketch to the final handover, ADD brings design, engineering and delivery under one roof, with six disciplines working as a single, coordinated practice."
       >
         <Reveal delay={0.3} className="mt-9 flex flex-wrap gap-3">
           <PillLink href="/contact" variant="solid">
@@ -77,10 +78,10 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Sectors */}
-      <section aria-label="Sectors we serve" className={section}>
-        <SectionHeading>Sectors We Serve</SectionHeading>
-        <FeatureGrid items={sectors} className="mt-[clamp(1.5rem,3vw,2.5rem)]" />
+      {/* Scope of work */}
+      <section aria-label="Scope of work" className={section}>
+        <SectionHeading>Scope of Work</SectionHeading>
+        <FeatureGrid items={scopeOfWork} className="mt-[clamp(1.5rem,3vw,2.5rem)]" />
       </section>
 
       {/* Selected work */}

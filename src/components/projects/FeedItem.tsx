@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion, useMotionValue, useSpring } from "motion/react";
-import { useEffect, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent } from "react";
+import { Fragment, useEffect, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent } from "react";
 import type { Project } from "@/data/types";
 import { cn } from "@/lib/cn";
 import { EASE_OUT_EXPO } from "@/components/motion/easing";
@@ -18,18 +18,27 @@ const RESIZE = "0.78s cubic-bezier(0.45, 0, 0.55, 1)";
  *   row / image height 522 · lead image 1033 × 522 · meta column 253, 46 to the image
  *   description 367 wide, 55 either side · gallery images 766 × 522, 40 apart
  *   meta: title 20 SemiBold · location/year 16 · labels 14 #797979 · values 12 / 0.72 tracking
+ *
+ * Outside (collapsed), every project's lead image sits in the same standard
+ * 1033 × 522 frame (cover), so the list reads as one coherent column.
+ * Inside (open), no image is cropped — the lead included: each frame takes its
+ * image's own aspect ratio and the row height drives the width.
+ * `--r` is the lead image's width / height, `--rc` the shared collapsed ratio.
  */
 const ROW_VARS = {
   "--h": "clamp(240px, 27.19cqw, 522px)",
-  "--w1": "clamp(260px, 30cqw, 560px)", // collapsed (big.dk-style) lead width
-  "--w2": "calc(var(--h) * 1033 / 522)", // open lead width — Figma 1033
+  "--hc": "calc(clamp(260px, 30cqw, 560px) * 522 / 1033)", // collapsed (big.dk-style) lead height
+  "--rc": 1033 / 522,
+  "--wl1": "calc(var(--hc) * var(--rc))", // collapsed lead width (same for every project)
+  "--wl2": "calc(var(--h) * var(--r))", // open lead width (native ratio)
+  "--wm": "min(90cqw, calc(110cqw * var(--r)))", // mobile open lead width (native ratio)
   "--meta": "clamp(170px, 13.18cqw, 253px)",
   "--gap": "clamp(20px, 2.4cqw, 46px)",
   "--dgap": "clamp(22px, 2.86cqw, 55px)",
   "--igap": "clamp(14px, 2.08cqw, 40px)",
   "--dw": "clamp(230px, 19.11cqw, 367px)",
   "--gutter": "max(20px, calc((100cqw - 1570px) / 2))",
-  "--ml1": "calc(50cqw - var(--w1) / 2)",
+  "--ml1": "calc(50cqw - var(--wl1) / 2)",
   "--ml2": "calc(var(--gutter) + var(--meta) + var(--gap))", // Figma x = 474
   "--pt": "calc(var(--h) * 50 / 522)", // title sits 50px below the image top
 } as CSSProperties;
@@ -50,18 +59,55 @@ function Field({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Optional 18px heading, then paragraphs split on blank lines (Figma: one empty line between them). */
+function TextBody({ title, text }: { title?: string; text: string }) {
+  return (
+    <>
+      {title && (
+        <h3 className="mb-[1.5em] text-left text-[clamp(16px,0.9375vw,18px)] leading-snug text-ink">{title}</h3>
+      )}
+      <div className="space-y-[1.5em]">
+        {text.split(/\n\s*\n/).map((para, i) => (
+          <p key={i}>{para}</p>
+        ))}
+      </div>
+    </>
+  );
+}
+
+const TEXT_COLUMN =
+  "w-[var(--dw)] shrink-0 overflow-y-auto md:text-justify text-[clamp(13px,0.73vw,14px)] leading-[1.5] tracking-[0.28px] text-ink-soft md:h-[var(--h)]";
+
 /**
  * One project in the feed. Collapsed (big.dk): title, location and year beside
  * a centred image. Open (Figma row): the image grows to 1033 × 522, the meta
- * column gains client / status / size / share, and the description plus the
+ * column gains project type / client / status / size / share, and the description plus the
  * remaining images slide in as a draggable strip.
  */
 export function FeedItem({ project, open, priority, onToggle }: FeedItemProps) {
   const [first, ...rest] = project.images;
   const href = `/projects/${project.slug}`;
+  const rowVars = { ...ROW_VARS, "--r": first.width / first.height } as CSSProperties;
+  const fields = [
+    { label: "PROJECT TYPE", value: project.type.trim() },
+    { label: "CLIENT", value: project.client.trim() },
+    { label: "STATUS", value: project.status.trim() },
+    { label: "SIZE M2/FT2", value: project.size.trim() },
+  ].filter((f) => f.value);
 
   const rowRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const metaRef = useRef<HTMLDivElement>(null);
+  const [metaH, setMetaH] = useState(0);
+
+  // Track the meta column's height so the open row is always tall enough for it.
+  useEffect(() => {
+    const el = metaRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setMetaH(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const drag = useRef({ active: false, startX: 0, startScroll: 0, moved: 0 });
   const pointer = useRef<{ x: number; y: number; fine: boolean } | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -150,7 +196,7 @@ export function FeedItem({ project, open, priority, onToggle }: FeedItemProps) {
   const resize = { transition: `width ${RESIZE}, margin-left ${RESIZE}, padding-top ${RESIZE}` };
 
   return (
-    <article id={project.slug} aria-labelledby={`${project.slug}-title`} className="@container" style={ROW_VARS}>
+    <article id={project.slug} aria-labelledby={`${project.slug}-title`} className="@container" style={rowVars}>
       <motion.div
         ref={rowRef}
         initial={{ opacity: 0, y: 16 }}
@@ -175,22 +221,27 @@ export function FeedItem({ project, open, priority, onToggle }: FeedItemProps) {
         >
           {/* Room for the full meta column on shorter screens; animates so neighbours never jump. */}
           <div
-            className={cn("flex w-max items-start pr-[5cqw]", open ? "md:min-h-[360px]" : "md:min-h-0")}
-            style={{ transition: `min-height ${RESIZE}` }}
+            className={cn("flex w-max items-start pr-[5cqw]", open ? "md:min-h-[max(360px,var(--mh,0px))]" : "md:min-h-0")}
+            style={{ transition: `min-height ${RESIZE}`, "--mh": `${metaH}px` } as CSSProperties}
           >
             {/* Lead image — width and offset animate between the two states */}
             <div
               className={cn(
                 "relative shrink-0",
-                "ml-[5cqw] w-[90cqw]", // mobile: meta stacks above
-                open ? "md:ml-[var(--ml2)] md:w-[var(--w2)]" : "md:ml-[var(--ml1)] md:w-[var(--w1)]",
+                "ml-[5cqw]", // mobile: meta stacks above
+                open ? "w-[var(--wm)] md:ml-[var(--ml2)] md:w-[var(--wl2)]" : "w-[90cqw] md:ml-[var(--ml1)] md:w-[var(--wl1)]",
               )}
               style={resize}
             >
-              {/* Meta column: hangs left of the image and spans its full height (Figma) */}
+              {/*
+               * Meta column: hangs left of the image and spans at least its full height (Figma).
+               * When long values wrap it grows past the image, and the row grows with it
+               * (via --mh) so the share links are never clipped.
+               */}
               <div
+                ref={metaRef}
                 className={cn(
-                  "mb-4 flex flex-col gap-5 md:absolute md:inset-y-0 md:right-full md:mr-[var(--gap)] md:mb-0 md:w-[var(--meta)] md:justify-between md:gap-0 md:text-right",
+                  "mb-4 flex flex-col gap-5 md:absolute md:top-0 md:right-full md:mr-[var(--gap)] md:mb-0 md:min-h-full md:w-[var(--meta)] md:justify-between md:gap-[clamp(14px,1.04vw,20px)] md:text-right",
                   open ? "md:pt-[var(--pt)]" : "md:pt-0",
                 )}
                 style={resize}
@@ -202,22 +253,24 @@ export function FeedItem({ project, open, priority, onToggle }: FeedItemProps) {
                   >
                     {project.title}
                   </h2>
-                  <p className="mt-1 text-[clamp(14px,0.8333vw,16px)] leading-normal">{project.location}</p>
-                  <p className="text-[clamp(14px,0.8333vw,16px)] leading-normal">{project.year}</p>
+                  {project.location && (
+                    <p className="mt-1 text-[clamp(14px,0.8333vw,16px)] leading-normal">{project.location}</p>
+                  )}
+                  {project.year && <p className="text-[clamp(14px,0.8333vw,16px)] leading-normal">{project.year}</p>}
                 </a>
 
                 <AnimatePresence initial={false}>
-                  {open && (
+                  {open && fields.length > 0 && (
                     <motion.dl
                       key="fields"
-                      className="grid grid-cols-3 gap-x-6 gap-y-3 md:mt-[calc(var(--h)*18/522)] md:flex md:flex-col md:gap-y-[clamp(7px,0.57vw,11px)]"
+                      className="grid grid-cols-2 gap-x-6 gap-y-3 md:mt-[calc(var(--h)*18/522)] md:flex md:flex-col md:gap-y-[clamp(7px,0.57vw,11px)]"
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT_EXPO, delay: 0.35 } }}
                       exit={{ opacity: 0, transition: { duration: 0.15 } }}
                     >
-                      <Field label="CLIENT" value={project.client} />
-                      <Field label="STATUS" value={project.status.trim()} />
-                      <Field label="SIZE M2/FT2" value={project.size} />
+                      {fields.map((f) => (
+                        <Field key={f.label} label={f.label} value={f.value} />
+                      ))}
                     </motion.dl>
                   )}
                 </AnimatePresence>
@@ -260,16 +313,20 @@ export function FeedItem({ project, open, priority, onToggle }: FeedItemProps) {
                   }
                   toggle(e);
                 }}
-                className="relative block aspect-[1033/522] overflow-hidden bg-surface"
+                className={cn(
+                  "relative block overflow-hidden bg-surface md:aspect-auto",
+                  open ? "aspect-(--r) md:h-[var(--h)]" : "aspect-(--rc) md:h-[var(--hc)]",
+                )}
+                style={{ transition: `height ${RESIZE}` }}
                 aria-label={open ? `Enlarge ${project.title} image 1` : `Open ${project.title}`}
               >
                 <Image
                   src={first.src}
-                  alt={`${project.title}, ${project.location}`}
+                  alt={[project.title, project.location].filter(Boolean).join(", ")}
                   fill
                   draggable={false}
                   priority={priority}
-                  sizes="(min-width: 768px) 1033px, 90vw"
+                  sizes="(min-width: 768px) 1100px, 90vw"
                   onLoad={() => setLoaded(true)}
                   className={cn("object-cover transition-opacity duration-700", loaded ? "opacity-100" : "opacity-0")}
                 />
@@ -286,20 +343,40 @@ export function FeedItem({ project, open, priority, onToggle }: FeedItemProps) {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0, transition: { duration: 0.2 } }}
                 >
-                  <motion.p
-                    className="mr-[calc(var(--dgap)_-_var(--igap))] w-[var(--dw)] shrink-0 overflow-y-auto md:text-justify text-[clamp(13px,0.73vw,14px)] leading-[1.5] tracking-[0.28px] text-ink-soft md:h-[var(--h)]"
-                    initial={{ opacity: 0, x: 60 }}
-                    animate={{ opacity: 1, x: 0, transition: { duration: 1, ease: EASE_OUT_EXPO, delay: 0.45 } }}
-                    data-lenis-prevent
-                  >
-                    {project.description}
-                  </motion.p>
+                  {project.description && (
+                    <motion.div
+                      className={cn("mr-[calc(var(--dgap)_-_var(--igap))]", TEXT_COLUMN)}
+                      initial={{ opacity: 0, x: 60 }}
+                      animate={{ opacity: 1, x: 0, transition: { duration: 1, ease: EASE_OUT_EXPO, delay: 0.45 } }}
+                      data-lenis-prevent
+                    >
+                      <TextBody title={project.descriptionTitle} text={project.description} />
+                    </motion.div>
+                  )}
                   {rest.map((img, i) => (
+                    <Fragment key={img.src}>
+                    {project.textBlocks
+                      ?.filter((b) => b.afterImage === i + 1)
+                      .map((b) => (
+                        <motion.div
+                          key={b.title ?? b.text.slice(0, 24)}
+                          className={cn("mx-[calc(var(--dgap)_-_var(--igap))]", TEXT_COLUMN)}
+                          initial={{ opacity: 0, x: 80 }}
+                          animate={{
+                            opacity: 1,
+                            x: 0,
+                            transition: { duration: 1.1, ease: EASE_OUT_EXPO, delay: 0.5 + Math.min(i, 5) * 0.07 },
+                          }}
+                          data-lenis-prevent
+                        >
+                          <TextBody title={b.title} text={b.text} />
+                        </motion.div>
+                      ))}
                     <motion.button
-                      key={img.src}
                       type="button"
                       onClick={() => drag.current.moved <= 6 && setLightbox(i + 1)}
-                      className="relative aspect-[766/522] h-[60cqw] shrink-0 overflow-hidden bg-surface md:h-[var(--h)]"
+                      className="relative h-[60cqw] shrink-0 overflow-hidden bg-surface md:h-[var(--h)]"
+                      style={{ aspectRatio: `${img.width} / ${img.height}` }}
                       initial={{ opacity: 0, x: 80 }}
                       animate={{
                         opacity: 1,
@@ -308,9 +385,18 @@ export function FeedItem({ project, open, priority, onToggle }: FeedItemProps) {
                       }}
                       aria-label={`Enlarge ${project.title} image ${i + 2} of ${project.images.length}`}
                     >
-                      <Image src={img.src} alt="" fill draggable={false} sizes="(min-width: 768px) 766px, 80vw" className="object-cover" />
+                      <Image src={img.src} alt="" fill draggable={false} sizes="(min-width: 768px) 1100px, 80vw" className="object-cover" />
                     </motion.button>
+                    </Fragment>
                   ))}
+                  {/* Text placed after the last image */}
+                  {project.textBlocks
+                    ?.filter((b) => b.afterImage >= project.images.length)
+                    .map((b) => (
+                      <div key={b.title ?? b.text.slice(0, 24)} className={cn("ml-[calc(var(--dgap)_-_var(--igap))]", TEXT_COLUMN)} data-lenis-prevent>
+                        <TextBody title={b.title} text={b.text} />
+                      </div>
+                    ))}
                 </motion.div>
               )}
             </AnimatePresence>

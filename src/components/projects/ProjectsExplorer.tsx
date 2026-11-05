@@ -7,9 +7,12 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import type { Project, ProjectCategory } from "@/data/types";
 import { FeedItem } from "./FeedItem";
 import { ProjectsBar, type BarCategory } from "./ProjectsBar";
+import { activeCount, applyFilters, facetGroups, type FacetKey, type Filters } from "./filters";
 
 type ProjectsExplorerProps = {
   projects: Project[];
+  /** Every project — search always looks across all classifications. */
+  allProjects: Project[];
   /** URL of the list this feed represents; closing a project returns here. */
   basePath: string;
   categories: BarCategory[];
@@ -27,6 +30,7 @@ const OPEN_GAP = 32;
 
 export function ProjectsExplorer({
   projects,
+  allProjects,
   basePath,
   categories,
   activeCategory,
@@ -40,8 +44,8 @@ export function ProjectsExplorer({
   // The open project is whatever /projects/<slug> the URL points at…
   const pathSlug = useMemo(() => {
     const last = pathname.split("/").filter(Boolean).at(-1);
-    return projects.some((p) => p.slug === last) ? last : undefined;
-  }, [pathname, projects]);
+    return allProjects.some((p) => p.slug === last) ? last : undefined;
+  }, [pathname, allProjects]);
 
   // …but a click opens it immediately, without waiting for the router to
   // report the new URL. Any real URL change (back/forward) takes over again.
@@ -53,13 +57,32 @@ export function ProjectsExplorer({
   }
   const openSlug = clicked ? clicked.slug : pathSlug;
 
-  const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return projects;
-    return projects.filter((p) =>
-      [p.title, p.location, p.client, p.status, p.category, p.year].some((v) => v.toLowerCase().includes(q)),
-    );
-  }, [projects, query]);
+  const [filters, setFilters] = useState<Filters>({});
+
+  // Searching looks across every classification, so the bar switches to "All Projects"
+  // while a query is typed; clearing it returns to this tab's own list.
+  const searching = query.trim().length > 0;
+  const source = searching ? allProjects : projects;
+  // Search matches name, type and place; the Filter panel narrows by facet.
+  const visible = useMemo(() => applyFilters(source, filters, query), [source, filters, query]);
+  const groups = useMemo(() => facetGroups(source, filters, query), [source, filters, query]);
+  const filterCount = activeCount(filters);
+
+  const toggleFilter = useCallback((key: FacetKey, value: string) => {
+    setFilters((f) => {
+      const current = f[key] ?? [];
+      const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
+      return { ...f, [key]: next };
+    });
+  }, []);
+
+  const clearFilters = () => {
+    setQuery("");
+    setFilters({});
+  };
+
+  // Plain-language summary of the active filters, for the empty state.
+  const filterSummary = Object.values(filters).flat().filter(Boolean).join(", ");
 
   const barRef = useRef<HTMLDivElement>(null);
   const pendingScroll = useRef<string | null>(null);
@@ -135,10 +158,18 @@ export function ProjectsExplorer({
       <ProjectsBar
         barRef={barRef}
         categories={categories}
-        activeCategory={activeCategory}
+        activeCategory={searching ? undefined : activeCategory}
         query={query}
         onQuery={setQuery}
         keywords={keywords}
+        filter={{
+          groups,
+          filters,
+          results: visible.length,
+          activeCount: filterCount,
+          onToggle: toggleFilter,
+          onClear: () => setFilters({}),
+        }}
       />
 
       <div
@@ -157,27 +188,23 @@ export function ProjectsExplorer({
 
         {visible.length === 0 && (
           <div className="container-content flex flex-col items-center gap-4 py-24 text-center">
-            <p className="text-[13px] tracking-[0.08em] text-ink/50 uppercase">No projects match “{query}”</p>
+            <p className="text-[13px] tracking-[0.08em] text-ink/50 uppercase">
+              No projects match
+              {query.trim() && ` “${query.trim()}”`}
+              {filterSummary && ` · ${filterSummary}`}
+            </p>
             <button
               type="button"
-              onClick={() => setQuery("")}
+              onClick={clearFilters}
               className="text-[12px] tracking-[0.1em] uppercase underline underline-offset-4 hover:text-brand"
             >
-              Clear search
+              Clear filters
             </button>
           </div>
         )}
       </div>
 
-      <div className="flex justify-center pt-[clamp(3rem,6vw,5rem)] pb-[clamp(3rem,6vw,5rem)]">
-        <button
-          type="button"
-          onClick={() => (lenis ? lenis.scrollTo(0, { duration: 1.4 }) : window.scrollTo({ top: 0, behavior: "smooth" }))}
-          className="px-4 py-3 text-[12px] tracking-[0.12em] uppercase transition-colors hover:text-brand"
-        >
-          Back to top
-        </button>
-      </div>
+      <div aria-hidden className="h-[clamp(4rem,8vw,7rem)]" />
     </>
   );
 }

@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type ComponentProps, type RefObject } from "react";
 import type { ProjectCategory } from "@/data/types";
 import { cn } from "@/lib/cn";
+import { FilterMenu } from "./FilterMenu";
 
 export type BarCategory = { slug: ProjectCategory; label: string };
 
@@ -15,6 +16,8 @@ type ProjectsBarProps = {
   onQuery: (q: string) => void;
   /** Words the search placeholder types out in turn. */
   keywords: string[];
+  /** Filter panel (facets, selection, result count) rendered beside the search. */
+  filter: Omit<ComponentProps<typeof FilterMenu>, "textClass">;
 };
 
 /** Figma tab type: uppercase 17px on a 31px line (scaled below 1920px). */
@@ -78,7 +81,7 @@ function TypewriterSearch({ query, onQuery, keywords }: Pick<ProjectsBarProps, "
             onQuery("");
             inputRef.current?.blur();
           }}
-          className="w-[10rem] bg-transparent text-ink uppercase outline-none placeholder:text-transparent [&::-webkit-search-cancel-button]:hidden"
+          className="w-[clamp(9rem,38vw,13rem)] bg-transparent text-ink uppercase outline-none placeholder:text-transparent [&::-webkit-search-cancel-button]:hidden"
           placeholder="Search"
           aria-label="Search projects"
         />
@@ -94,23 +97,33 @@ function TypewriterSearch({ query, onQuery, keywords }: Pick<ProjectsBarProps, "
 }
 
 /**
- * Sticky classification tabs (Figma "sections" frame): ARCHITECTURE / URBAN /
- * INTERIOR left-aligned on a 1px rule, the active one underlined 2px. Each tab
- * is its own page. Search sits on the right.
+ * Sticky classification tabs (Figma "sections" frame): ALL PROJECTS / ARCHITECTURE /
+ * URBAN / INTERIOR left-aligned on a 1px rule, the active one underlined 2px. Each
+ * tab is its own page; "All Projects" is active when no classification is (and
+ * while searching, since search covers every classification). Search (name, type,
+ * place) and the Filter panel sit on the right.
  */
-export function ProjectsBar({ barRef, categories, activeCategory, query, onQuery, keywords }: ProjectsBarProps) {
+export function ProjectsBar({
+  barRef,
+  categories,
+  activeCategory,
+  query,
+  onQuery,
+  keywords,
+  filter,
+}: ProjectsBarProps) {
   return (
     <div ref={barRef} className="sticky top-24 z-30 bg-white/92 pt-2.5 backdrop-blur-md">
       <div className="container-wide">
         <div className="flex flex-col-reverse gap-2 border-b border-ink sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <nav aria-label="Project classifications" className="no-scrollbar -mb-px overflow-x-auto">
             <ul className="flex gap-[clamp(1.25rem,1.72vw,2.0625rem)]">
-              {categories.map((c) => {
+              {[{ slug: undefined, label: "All Projects" }, ...categories].map((c) => {
                 const active = c.slug === activeCategory;
                 return (
-                  <li key={c.slug} className="relative">
+                  <li key={c.slug ?? "all"} className="relative">
                     <Link
-                      href={`/projects/${c.slug}`}
+                      href={c.slug ? `/projects/${c.slug}` : "/projects"}
                       aria-current={active ? "page" : undefined}
                       className={cn(
                         "block pb-[5px] whitespace-nowrap transition-colors duration-300",
@@ -132,8 +145,10 @@ export function ProjectsBar({ barRef, categories, activeCategory, query, onQuery
               })}
             </ul>
           </nav>
-          <div className="pb-[5px]">
+          <div className="flex items-center justify-between gap-5 pb-[5px] sm:justify-end">
             <TypewriterSearch query={query} onQuery={onQuery} keywords={keywords} />
+            <span aria-hidden className="h-4 w-px bg-ink/20" />
+            <FilterMenu {...filter} textClass={tabText} />
           </div>
         </div>
       </div>

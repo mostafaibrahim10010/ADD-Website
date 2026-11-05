@@ -15,7 +15,7 @@ import { TextReveal } from "@/components/motion/TextReveal";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Planning a new project? Contact ADD Architects in Alexandria, Egypt — info@addarchitects.net, +20 111 5111 825.",
+    "Planning a new project? Contact ADD Architects in Alexandria, Egypt. Email info@addarchitects.net or call +20 111 5111 825.",
   alternates: { canonical: "/contact" },
 };
 
@@ -34,61 +34,66 @@ export default function ContactPage() {
         lead={site.description}
       />
 
-      {/* Details + form */}
-      <section
-        aria-label="Contact details and enquiry form"
-        className="container-content grid gap-[clamp(3rem,6vw,5.5rem)] pt-[clamp(3.5rem,6vw,5.5rem)] lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]"
-      >
-        <div>
-          <SectionHeading>Get in Touch</SectionHeading>
-          <Stagger className="mt-8 flex flex-col gap-8" stagger={0.08}>
-            <StaggerItem>
-              <h3 className={label}>Studio</h3>
-              <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className={`mt-2 flex gap-3 text-lg leading-snug ${detailLink}`}>
-                <Image src="/icons/location.svg" alt="" width={24} height={24} className="mt-0.5 size-6 shrink-0" />
-                <span>
-                  {site.address[0]}
-                  <br />
-                  {site.address[1]}
-                </span>
-              </a>
-            </StaggerItem>
-            <StaggerItem>
-              <h3 className={label}>Email</h3>
-              <a href={`mailto:${site.email}`} className={`mt-2 flex items-center gap-3 text-lg ${detailLink}`}>
-                <Image src="/icons/email.svg" alt="" width={24} height={24} className="size-6" />
-                {site.email}
-              </a>
-            </StaggerItem>
-            <StaggerItem>
-              <h3 className={label}>Phone</h3>
-              <ul className="mt-2 flex flex-col gap-1.5 text-lg">
-                {site.phones.map((p) => (
-                  <li key={p.value}>
-                    <a href={p.href} className={`flex items-center gap-3 ${detailLink}`}>
-                      <Image src="/icons/call.svg" alt="" width={24} height={24} className="size-6" />
-                      <span>
-                        <span className="text-muted">{p.label}</span> {p.value}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </StaggerItem>
-            <StaggerItem>
-              <h3 className={label}>Follow</h3>
-              <div className="mt-3">
-                <SocialLinks />
-              </div>
-            </StaggerItem>
-          </Stagger>
-        </div>
+      {/* "Get in Touch" details + form, under one "Contact Us" heading */}
+      <section aria-label="Contact us" className="container-content pt-[clamp(3.5rem,6vw,5.5rem)]">
+        <SectionHeading>Contact Us</SectionHeading>
+        <div className="mt-8 grid gap-[clamp(3rem,6vw,5.5rem)] lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+          <div>
+            <Reveal>
+              <h3 className="text-[clamp(1.5rem,1.25rem+0.9vw,2.125rem)] leading-tight font-medium">Get in Touch</h3>
+              <p className="mt-3 max-w-[30rem] text-[15px] leading-[1.65] text-muted">
+                Reach our team directly by email or phone, visit us in Alexandria, or send the form and we’ll
+                get back to you.
+              </p>
+            </Reveal>
+            <Stagger className="mt-9 flex flex-col gap-8 border-t border-ink/10 pt-9" stagger={0.08}>
+              <StaggerItem>
+                <h4 className={label}>Address</h4>
+                <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className={`mt-2 flex gap-3 text-lg leading-snug ${detailLink}`}>
+                  <Image src="/icons/location.svg" alt="" width={24} height={24} className="mt-0.5 size-6 shrink-0" />
+                  <span>
+                    {site.address[0]}
+                    <br />
+                    {site.address[1]}
+                  </span>
+                </a>
+              </StaggerItem>
+              <StaggerItem>
+                <h4 className={label}>Email</h4>
+                <a href={`mailto:${site.email}`} className={`mt-2 flex items-center gap-3 text-lg ${detailLink}`}>
+                  <Image src="/icons/email.svg" alt="" width={24} height={24} className="size-6" />
+                  {site.email}
+                </a>
+              </StaggerItem>
+              <StaggerItem>
+                <h4 className={label}>Phone</h4>
+                <ul className="mt-2 flex flex-col gap-1.5 text-lg">
+                  {site.phones.map((p) => (
+                    <li key={p.value}>
+                      <a href={p.href} className={`flex items-center gap-3 ${detailLink}`}>
+                        <Image src="/icons/call.svg" alt="" width={24} height={24} className="size-6" />
+                        <span>
+                          <span className="text-muted">{p.label}</span> {p.value}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </StaggerItem>
+              <StaggerItem>
+                <h4 className={label}>Follow</h4>
+                <div className="mt-3">
+                  <SocialLinks />
+                </div>
+              </StaggerItem>
+            </Stagger>
+          </div>
 
-        <div>
-          <SectionHeading>Project Enquiry</SectionHeading>
-          <Reveal className="mt-8">
-            <ContactForm />
-          </Reveal>
+          <div>
+            <Reveal>
+              <ContactForm />
+            </Reveal>
+          </div>
         </div>
       </section>
 
@@ -102,12 +107,12 @@ export default function ContactPage() {
       </section>
 
       {/* Visit */}
-      <section aria-label="Visit the studio" className={section}>
-        <SectionHeading>Visit The Studio</SectionHeading>
+      <section aria-label="Visit our head office" className={section}>
+        <SectionHeading>Visit Our Head Office</SectionHeading>
         <div className="mt-[clamp(1.5rem,3vw,2.5rem)] grid gap-[clamp(1rem,2vw,1.5rem)] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
           <Reveal className="relative aspect-[16/10] overflow-hidden bg-surface lg:aspect-auto lg:min-h-[420px]">
             <iframe
-              title="ADD Architects studio location on Google Maps"
+              title="ADD Architects head office location on Google Maps"
               src={mapEmbed}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
@@ -116,8 +121,8 @@ export default function ContactPage() {
           </Reveal>
           <Stagger className="flex flex-col gap-[clamp(1rem,2vw,1.5rem)]" stagger={0.1}>
             <StaggerItem className="flex flex-1 flex-col bg-surface p-[clamp(1.5rem,2.5vw,2.25rem)]">
-              <p className={label}>Head Office · Egypt</p>
-              <h3 className="mt-3 text-[clamp(1.25rem,1.1rem+0.5vw,1.625rem)] font-medium">Alexandria Studio</h3>
+              <p className={label}>Egypt</p>
+              <h3 className="mt-3 text-[clamp(1.25rem,1.1rem+0.5vw,1.625rem)] font-medium">Alexandria Head Office</h3>
               <p className="mt-2 text-[15px] leading-[1.65] text-muted">
                 {site.address[0]} {site.address[1]}
               </p>

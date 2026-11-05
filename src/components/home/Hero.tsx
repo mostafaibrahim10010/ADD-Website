@@ -34,7 +34,7 @@ export function Hero() {
 
   return (
     <section ref={ref} aria-label="Introduction" className="relative pt-[clamp(120px,9.8vw,188px)] pb-[clamp(3rem,5.5vw,6.625rem)]">
-      <h1 className="sr-only">ADD Architects — {QUOTE.join(" ")}</h1>
+      <h1 className="sr-only">ADD Architects. {QUOTE.join(" ")}</h1>
       <motion.div
         aria-hidden
         className="@container relative mx-auto aspect-[1192/401] w-[min(1192px,calc(100%-2.5rem))]"

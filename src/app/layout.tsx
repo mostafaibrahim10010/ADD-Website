@@ -4,6 +4,7 @@ import { Questrial } from "next/font/google";
 import { Providers } from "@/components/layout/Providers";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { BackToTop } from "@/components/layout/BackToTop";
 import { site, siteUrl } from "@/data/site";
 import "./globals.css";
 
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Header />
           <main id="main">{children}</main>
           <Footer />
+          <BackToTop />
         </Providers>
       </body>
     </html>

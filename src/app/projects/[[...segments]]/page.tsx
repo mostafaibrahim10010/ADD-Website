@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { CATEGORIES, allProjectPaths, resolveProjectsView } from "@/data/projectRoutes";
+import { projects } from "@/data/projects";
 import { ProjectsExplorer } from "@/components/projects/ProjectsExplorer";
 
 type Props = PageProps<"/projects/[[...segments]]">;
@@ -19,9 +20,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (view.kind === "project") {
     const p = view.project;
+    const where = [p.location, p.year].filter(Boolean).join(", ");
+    const summary = p.description ? ` ${p.description.replace(/\s+/g, " ").slice(0, 150).trim()}…` : "";
     return {
       title: p.title,
-      description: `${p.title} — ${p.location}, ${p.year}. ${p.description.slice(0, 150).trim()}…`,
+      description: `${p.title}${where ? `, ${where}.` : " by ADD Architects."}${summary}`,
       alternates: { canonical },
       openGraph: { images: [{ url: p.images[0].src }] },
     };
@@ -42,8 +45,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// Words the search box types out — real places and themes from the portfolio.
-const KEYWORDS = ["RIYADH", "ALEXANDRIA", "VILLA", "WATERFRONT", "COMPETITION", "CAIRO", "MUSEUM", "BASRA"];
+// Words the search box types out — real names, types and places from the portfolio.
+const KEYWORDS = ["RESIDENTIAL", "RIYADH", "MIXED-USE", "VILLA", "HOSPITALITY", "ALEXANDRIA", "CULTURAL HERITAGE", "MOSQUE"];
 
 export default function ProjectsPage({ params }: Props) {
   // URL data is read inside Suspense so client navigations between
@@ -66,7 +69,7 @@ async function ProjectsContent({ params }: Pick<Props, "params">) {
       ? view.project.title
       : activeCategory
         ? `${CATEGORIES.find((c) => c.slug === activeCategory)!.label} projects`
-        : "Projects";
+        : "All projects";
 
   return (
     <div className="pt-[clamp(6.25rem,7.92vw,9.5rem)]">
@@ -75,6 +78,7 @@ async function ProjectsContent({ params }: Pick<Props, "params">) {
         // Remount per list so open state and search reset between classifications.
         key={view.basePath}
         projects={view.list}
+        allProjects={projects}
         basePath={view.basePath}
         categories={CATEGORIES}
         activeCategory={activeCategory}

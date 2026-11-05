@@ -18,12 +18,15 @@ type ProjectCardProps = {
 /** Image-led card that links to the project's row on the Projects page. */
 export function ProjectCard({ project, eyebrow }: ProjectCardProps) {
   const cover = project.images[0];
+  const meta = [project.location, project.year, project.status.trim()].filter(Boolean).join(" · ");
   return (
     <Link href={`/projects/${project.slug}`} className="group block">
-      <div className="relative aspect-[4/3] overflow-hidden bg-surface">
+      {/* One shared 3:2 frame for every card so a row of cards reads as a set;
+          the full, uncropped image is shown on the project itself. */}
+      <div className="relative aspect-[3/2] overflow-hidden bg-surface">
         <Image
           src={cover.src}
-          alt={`${project.title}, ${project.location}`}
+          alt={[project.title, project.location].filter(Boolean).join(", ")}
           fill
           sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition-transform duration-[1.2s] ease-out-expo group-hover:scale-[1.06]"
@@ -38,9 +41,7 @@ export function ProjectCard({ project, eyebrow }: ProjectCardProps) {
           <h3 className="mt-1 text-lg leading-snug font-semibold transition-colors duration-500 group-hover:text-brand">
             {project.title}
           </h3>
-          <p className="mt-0.5 text-sm text-muted">
-            {project.location} · {project.year} · {project.status}
-          </p>
+          {meta && <p className="mt-0.5 text-sm text-muted">{meta}</p>}
         </div>
         <span className="mt-1.5 shrink-0">
           <ArrowCircle size={28} />

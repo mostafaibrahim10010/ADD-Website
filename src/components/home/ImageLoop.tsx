@@ -19,7 +19,7 @@ import { cn } from "@/lib/cn";
 /** px per second at rest — scrolling the page speeds the strip up. */
 const BASE_SPEED = 45;
 
-/** Endless, scroll-reactive strip of the studio's illustrations. */
+/** Endless, scroll-reactive strip of the firm's illustrations. */
 export function ImageLoop() {
   const reduceMotion = useReducedMotion();
   const trackRef = useRef<HTMLDivElement>(null);
@@ -54,7 +54,7 @@ export function ImageLoop() {
   });
 
   return (
-    <section aria-label="Studio illustrations" className="overflow-hidden">
+    <section aria-label="ADD illustrations" className="overflow-hidden">
       <motion.div
         ref={trackRef}
         className="flex w-max"

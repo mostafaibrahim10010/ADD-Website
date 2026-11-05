@@ -23,6 +23,16 @@ export function FeatureGrid({ items, columns = 3, className }: FeatureGridProps)
             </span>
             <h3 className="mt-6 text-[clamp(1.125rem,1rem+0.4vw,1.375rem)] leading-snug font-medium">{item.title}</h3>
             <p className="mt-3 text-[15px] leading-[1.65] text-muted">{item.description}</p>
+            {item.items && (
+              <ul className="mt-5 flex flex-col gap-2 border-t border-ink/15 pt-4">
+                {item.items.map((sub) => (
+                  <li key={sub} className="flex items-center gap-2.5 text-[15px] leading-snug">
+                    <span aria-hidden className="size-1.5 shrink-0 bg-brand" />
+                    {sub}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </StaggerItem>
       ))}

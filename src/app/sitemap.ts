@@ -17,9 +17,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority,
   }));
   const projectPages = allProjectPaths().map((segments) => ({
-    url: `${siteUrl}/projects/${segments.join("/")}`,
+    url: `${siteUrl}/projects${segments.length ? `/${segments.join("/")}` : ""}`,
     changeFrequency: "monthly" as const,
-    priority: segments[0] && ["architecture", "urban", "interior"].includes(segments[0]) ? 0.9 : 0.7,
+    priority: !segments.length || ["architecture", "urban", "interior"].includes(segments[0]) ? 0.9 : 0.7,
   }));
   return [...pages, ...projectPages];
 }

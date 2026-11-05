@@ -43,7 +43,7 @@ function Banner() {
           </p>
         </Reveal>
         <Reveal delay={0.15} y={20} className="shrink-0">
-          <PillLink href="/contact">Get in Touch</PillLink>
+          <PillLink href="/contact">Contact Us</PillLink>
         </Reveal>
       </div>
     </section>

@@ -10,7 +10,6 @@ import { ProjectCard } from "@/components/sections/ProjectCard";
 import { StatsGrid } from "@/components/sections/StatsGrid";
 import { ParallaxImage } from "@/components/motion/ParallaxImage";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
-import { TextReveal } from "@/components/motion/TextReveal";
 
 export const metadata: Metadata = {
   title: "Partners & Clients",
@@ -21,12 +20,12 @@ export const metadata: Metadata = {
 
 // Projects with a named client in the portfolio.
 const collaborations = pickProjects(
-  "al-olaya",
-  "yamama-bussniss-hub",
-  "dar-yamama-residentail-compound",
+  "al-yamama",
+  "madar-business-hub",
+  "afaq-compound",
   "nile-gate",
   "al-ahram",
-  "gleem-flat",
+  "salt-and-oak-apartment",
 );
 
 const section = "container-content scroll-mt-28 pt-[clamp(5rem,9vw,8rem)]";
@@ -37,7 +36,7 @@ export default function PartnersPage() {
       <PageHeader
         crumb="Partners & Clients"
         title="Trusted By Institutions, Developers And Communities"
-        lead="Our work is built on long-standing relationships with public authorities, developers, contractors and international organisations — partners who share our commitment to thoughtful, lasting architecture."
+        lead="Our work is built on long-standing relationships with public authorities, developers, contractors and international organisations, partners who share our commitment to thoughtful, lasting architecture."
       >
         <StatsGrid className="mt-[clamp(2.5rem,4vw,3.5rem)]" />
       </PageHeader>
@@ -49,10 +48,6 @@ export default function PartnersPage() {
 
       <section aria-label="Why partners choose ADD" className={section}>
         <SectionHeading>Why Partners Choose ADD</SectionHeading>
-        <TextReveal
-          text="One Studio, From The First Idea To The Final Detail"
-          className="mt-[21px] max-w-[900px] text-display-sm font-medium"
-        />
         <FeatureGrid items={values} columns={4} className="mt-[clamp(2rem,3vw,3rem)]" />
       </section>
 
@@ -70,12 +65,12 @@ export default function PartnersPage() {
       <section aria-label="Awards and recognition" className={`${section} pb-[clamp(4rem,7vw,7.5rem)]`}>
         <SectionHeading>Awards &amp; Recognition</SectionHeading>
         <div className="mt-[clamp(1.5rem,3vw,2.5rem)] grid gap-[clamp(2rem,4vw,4rem)] md:grid-cols-2">
-          {/* Stretches to the height of the awards list; the crop is anchored on the two people. */}
+          {/* Stretches to the height of the awards list. */}
           <ParallaxImage
-            src="/images/about/about-04.webp"
-            alt="ADD Architects receiving the AIA Middle East Honor Award in Jordan, 2025"
-            className="aspect-[1601/951] w-full md:aspect-auto md:h-full md:min-h-[420px]"
-            objectPosition="24% 35%"
+            src="/images/partners/awards.webp"
+            alt="Stone-clad tower designed by ADD Architects"
+            className="aspect-[1542/2170] w-full md:aspect-auto md:h-full md:min-h-[420px]"
+            objectPosition="50% 40%"
             strength={3}
           />
           <div className="flex flex-col">

@@ -109,7 +109,7 @@ export function Lightbox({ title, images, index, onChange }: LightboxProps) {
               >
                 <Image
                   src={images[index].src}
-                  alt={`${title} — image ${index + 1} of ${count}`}
+                  alt={`${title}, image ${index + 1} of ${count}`}
                   fill
                   sizes="100vw"
                   className="pointer-events-none object-contain select-none"

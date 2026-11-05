@@ -112,10 +112,36 @@ export const loopImages = [
   "/images/home/loop/loop-10.webp",
 ];
 
-export const partnerLogos = Array.from(
-  { length: 25 },
-  (_, i) => `/images/partners/logo-${String(i + 1).padStart(2, "0")}.webp`,
-);
+/** Full-colour partner & client logos, in display order (logo-01 … logo-27). */
+export const partnerLogos = [
+  "UNESCO",
+  "Egyptian Ministry of Youth and Sports",
+  "Egyptian Ministry of Housing, Utilities and Urban Communities",
+  "Iraqi Ministry of Culture, Tourism and Antiquities",
+  "Egyptian Administrative Control Authority",
+  "Riyadh Region Municipality",
+  "MBL",
+  "Orascom Construction",
+  "4D",
+  "Saudi Ministry of Culture",
+  "African Consultant Office",
+  "AIA Middle East",
+  "Anmatt Al-Amar Construction",
+  "Zenith Developments",
+  "MDR",
+  "Nalco Champion",
+  "Fraser Suites",
+  "Millennium Hotels and Resorts",
+  "PRAS Tecnica Edilizia",
+  "Morshedy Group",
+  "Redcon Construction",
+  "Arab Organization for Industrialization",
+  "Al Madinah Region Municipality",
+  "Prodesign",
+  "Civil Consulting",
+  "H Triple S",
+  "NASS Development",
+].map((name, i) => ({ name, src: `/images/partners/logo-${String(i + 1).padStart(2, "0")}.webp` }));
 
 export const articles: Article[] = [
   {
@@ -199,12 +225,12 @@ export const team: TeamMember[] = [
   { name: "Haneen Nabil", role: "Graphic Designer" },
 ];
 
-/** How a commission moves through the studio (Services page). */
+/** How a commission moves through the firm (Services page). */
 export const process: Step[] = [
   {
     title: "Brief & Research",
     description:
-      "We listen first — studying the site, its context and its history, and shaping a clear brief with you before any line is drawn.",
+      "We listen first, studying the site, its context and its history, and shaping a clear brief with you before any line is drawn.",
   },
   {
     title: "Concept Design",
@@ -224,18 +250,42 @@ export const process: Step[] = [
   {
     title: "Delivery & Supervision",
     description:
-      "On site, we supervise quality, schedule and budget through to handover — protecting the design intent at every stage.",
+      "On site, we supervise quality, schedule and budget through to handover, protecting the design intent at every stage.",
   },
 ];
 
-/** Sectors the portfolio spans (Services page). */
-export const sectors = [
-  { title: "Residential", description: "Villas, apartments and residential compounds." },
-  { title: "Commercial & Mixed-Use", description: "Business hubs, offices and mixed-use districts." },
-  { title: "Hospitality", description: "Hotels, serviced apartments and leisure." },
-  { title: "Cultural & Heritage", description: "Museums, rehabilitation of historic sites." },
-  { title: "Urban & Waterfront", description: "Masterplans, public realm and waterfronts." },
-  { title: "Education & Civic", description: "Schools, pavilions and community buildings." },
+/** Scope of work the portfolio is organised into (Services page). */
+export const scopeOfWork: Step[] = [
+  {
+    title: "Residential",
+    description: "Private villas, apartments and gated compounds designed around privacy, daylight and everyday comfort.",
+    items: ["Villas & Houses", "Apartments", "Residential Compounds"],
+  },
+  {
+    title: "Hospitality",
+    description: "Hotels and guest experiences, from arrival lobbies and lounges to complete renovations.",
+    items: ["Hotels", "Lobbies & Lounges", "Hotel Renovations"],
+  },
+  {
+    title: "Administrative & Public Buildings",
+    description: "Headquarters, offices and institutional buildings that balance presence, efficiency and identity.",
+    items: ["Corporate Headquarters", "Workplace Interiors", "Institutional Buildings"],
+  },
+  {
+    title: "Mixed-Use & Commercial",
+    description: "Towers and complexes that bring living, working and retail together in one active destination.",
+    items: ["Mixed-Use Towers", "Business Hubs", "Commercial & Retail"],
+  },
+  {
+    title: "Cultural Heritage & Education",
+    description: "Heritage rehabilitation, museums, civic venues and schools that respect history while serving today.",
+    items: ["Heritage Rehabilitation", "Museums & Cultural Venues", "Educational Buildings"],
+  },
+  {
+    title: "Urban, Landscape & Waterfront",
+    description: "District-scale masterplans, public realm, landscape and waterfront regeneration.",
+    items: ["Urban Master Planning", "Landscape Design", "Waterfront Regeneration"],
+  },
 ];
 
 /** Why clients and partners choose ADD (Partners page). */
@@ -243,7 +293,7 @@ export const values: Step[] = [
   {
     title: "One Integrated Team",
     description:
-      "Architecture, urban, interiors, BIM, supervision and project management under one roof — one point of responsibility.",
+      "Architecture, urban, interiors, BIM, supervision and project management under one roof, with one point of responsibility.",
   },
   {
     title: "Heritage-Grounded Design",
@@ -270,7 +320,7 @@ export const nextSteps: Step[] = [
   },
   {
     title: "Introductory Meeting",
-    description: "We meet — in our Alexandria studio, on site or online — to discuss scope, programme and budget.",
+    description: "We meet at our Alexandria head office, on site or online, to discuss scope, programme and budget.",
   },
   {
     title: "Tailored Proposal",
@@ -282,7 +332,7 @@ export const faqs: Faq[] = [
   {
     question: "Which services does ADD Architects offer?",
     answer:
-      "Architecture design, urban design, interior design, construction supervision, BIM services and project management — individually or as one integrated package from concept to handover.",
+      "Architecture design, urban design, interior design, construction supervision, BIM services and project management, individually or as one integrated package from concept to handover.",
   },
   {
     question: "Do you work on projects outside Egypt?",
@@ -292,16 +342,16 @@ export const faqs: Faq[] = [
   {
     question: "Can you take a project from concept all the way to construction?",
     answer:
-      "Yes. Our design teams work alongside our BIM, supervision and project-management teams, so a single studio can carry your project from the first brief to the final handover.",
+      "Yes. Our design teams work alongside our BIM, supervision and project-management teams, so a single firm can carry your project from the first brief to the final handover.",
   },
   {
     question: "Do you take part in design competitions?",
     answer:
-      "Regularly. Competition work has earned the studio first place in the Tamayouz Dewan Award for the Dakeer Island waterfront and first place in UNESCO’s international competition for the rehabilitation of historic sites.",
+      "Regularly. Competition work has earned the firm first place in the Tamayouz Dewan Award for the Dakeer Island waterfront and first place in UNESCO’s international competition for the rehabilitation of historic sites.",
   },
   {
     question: "What information should I include in my enquiry?",
     answer:
-      "The project location, type and approximate size, your timeline and budget range, and any drawings or references you already have. Don’t worry if you don’t have everything — we’ll shape the brief together.",
+      "The project location, type and approximate size, your timeline and budget range, and any drawings or references you already have. Don’t worry if you don’t have everything. We’ll shape the brief together.",
   },
 ];

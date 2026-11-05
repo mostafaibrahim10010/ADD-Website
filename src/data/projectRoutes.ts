@@ -1,4 +1,4 @@
-import { projects } from "./projects";
+import { categoryOrder, projects } from "./projects";
 import type { Project, ProjectCategory } from "./types";
 
 /** Top-level classifications — each one is its own page at /projects/<slug>. */
@@ -17,7 +17,14 @@ export function getProject(slug: string): Project | undefined {
 }
 
 export function filterProjects(category?: ProjectCategory): Project[] {
-  return projects.filter((p) => !category || p.category === category);
+  if (!category) return projects;
+  const listed = projects.filter((p) => p.category === category || p.alsoIn?.includes(category));
+  // Each classification keeps its own Figma order (shared projects sit at different positions).
+  const rank = (p: Project) => {
+    const i = categoryOrder[category].indexOf(p.slug);
+    return i === -1 ? Infinity : i;
+  };
+  return listed.sort((a, b) => rank(a) - rank(b));
 }
 
 export type ProjectsView =
@@ -55,10 +62,10 @@ export function resolveProjectsView(segments: string[] = []): ProjectsView | nul
 
 /**
  * Every URL under /projects, for static generation and the sitemap.
- * Bare /projects redirects to the first classification (see next.config.ts).
+ * `[]` is bare /projects — the "All Projects" view.
  */
 export function allProjectPaths(): string[][] {
-  const paths: string[][] = [];
+  const paths: string[][] = [[]];
   for (const c of CATEGORIES) paths.push([c.slug]);
   for (const p of projects) paths.push([p.slug]);
   return paths;

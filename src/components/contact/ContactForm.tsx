@@ -13,7 +13,7 @@ const label =
 
 /**
  * Project enquiry form. There is no backend yet, so submitting composes an
- * email to the studio in the visitor's mail app with everything pre-filled.
+ * email to the firm in the visitor's mail app with everything pre-filled.
  */
 export function ContactForm() {
   const [sent, setSent] = useState(false);
@@ -30,7 +30,7 @@ export function ContactForm() {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     const get = (k: string) => String(data.get(k) ?? "").trim();
-    const subject = `Project enquiry — ${get("service") || "General"} — ${get("name")}`;
+    const subject = `Project enquiry: ${get("service") || "General"} (${get("name")})`;
     const lines = [`Name: ${get("name")}`, `Email: ${get("email")}`];
     if (get("phone")) lines.push(`Phone: ${get("phone")}`);
     lines.push(`Service: ${get("service") || "General"}`, "", get("message"));
@@ -99,7 +99,7 @@ export function ContactForm() {
             aria-hidden
             className="absolute inset-0 translate-y-full bg-brand transition-transform duration-500 ease-out-expo group-hover:translate-y-0"
           />
-          <span className="relative">Send enquiry</span>
+          <span className="relative">Send Message</span>
           <span className="relative flex size-8 items-center justify-center">
             <ArrowCircle tone="light" />
           </span>
